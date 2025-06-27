@@ -14,6 +14,7 @@ public class PlayerController : LivingEntity
     Vector2 moveInput;      // 存储输入的二维向量
     Vector2 lookInput;      // 存储鼠标屏幕位置的二维向量
     bool isFiring;
+    float velocityY;        // 用于存储和计算垂直速度
 
     public float moveSpeed = 6.0f;
     public float turnSpeed = 15.0f;
@@ -55,33 +56,35 @@ public class PlayerController : LivingEntity
 
     void HandleMovement()
     {
-        // 创建一个三维移动向量，忽略Y轴(只在水平面移动)
-        Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
-        controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+        Vector3 horizontalVelocity = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed;
+
+        if (controller.isGrounded)
+        {
+            velocityY = -1f;
+        }
+        else 
+        {
+            velocityY += Physics.gravity.y * Time.deltaTime;
+        }
+
+        Vector3 finalVelocity = horizontalVelocity + Vector3.up * velocityY;
+        controller.Move(finalVelocity * Time.deltaTime);
     }
 
     void HandleRotation()
     {
-        // 从相机发射一条射线到鼠标在屏幕上的位置
         Ray ray = viewCamera.ScreenPointToRay(lookInput);
-
-        // 创建一个无限大的、法线向上的平面，位置在世界坐标原点
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayDistance;
 
-        // 如果射线与平面相交
         if (groundPlane.Raycast(ray, out rayDistance))
         {
-            // 获取射线与平面的交点
             Vector3 point = ray.GetPoint(rayDistance);
-
-            // 计算从玩家位置指向目标点的方向
             Vector3 lookDirection = point - transform.position;
             lookDirection.y = 0;
 
             if (lookDirection != Vector3.zero)
             {
-                // 创建一个朝向目标方向的旋转并使用Slerp(球面线性插值)平滑地将当前旋转过渡到目标旋转
                 Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
             }
@@ -105,7 +108,6 @@ public class PlayerController : LivingEntity
 
     void OnEnable()
     {
-        // 当脚本组件启用时，确保Action Map是启用的
         playerInputActions.Player.Enable();
     }
 

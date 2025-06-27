@@ -68,6 +68,9 @@ public class Enemy : LivingEntity
     {
         hasTarget = false;
         currentState = State.Idle;
+
+        StopAllCoroutines();
+        
     }
 
     IEnumerator Attack()
@@ -116,6 +119,14 @@ public class Enemy : LivingEntity
                     pathFinder.SetDestination(targetPosition);
             }
             yield return new WaitForSeconds(refreshRate);
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (targetEntity != null)
+        {
+            targetEntity.OnDeath -= OnTargetDeath;
         }
     }
 }
