@@ -71,6 +71,12 @@ public class PlayerController : LivingEntity
         controller.Move(finalVelocity * Time.deltaTime);
     }
 
+    public void ResetMovementState()
+    {
+        moveInput = Vector2.zero;
+        velocityY = 0f;
+    }
+
     void HandleRotation()
     {
         Ray ray = viewCamera.ScreenPointToRay(lookInput);

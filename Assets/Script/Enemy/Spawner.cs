@@ -107,8 +107,25 @@ public class Spawner : MonoBehaviour
 
     void ResetPlayerPosition()
     {
-        playerTransform.position = map.GetTileFromPosition(Vector3.zero).position + Vector3.up * 5f;
-        Debug.Log("reset");
+        var characterController = playerTransform.GetComponent<CharacterController>();
+        if (characterController != null)
+        {
+            characterController.enabled = false;
+        }
+
+        playerTransform.position = (Vector3.up * 5f) + (map.GetTileFromPosition(Vector3.zero).position);
+
+        if (characterController != null)
+        {
+            characterController.enabled = true;
+        }
+
+        // Reset player state
+        var playerController = playerTransform.GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.ResetMovementState();
+        }
     }
 
     void NextWave()
@@ -126,7 +143,6 @@ public class Spawner : MonoBehaviour
             {
                 OnNewWave(currentWaveNum);
             }
-            Debug.Log("reset ready");
             ResetPlayerPosition();
         }
     }
