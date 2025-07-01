@@ -124,7 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 250db50ad8f2e3749965e5f0dbd336ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingHealth: 3
+  startingHealth: 2
+  damageFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  deathEffect: {fileID: 8414169201672783338, guid: b6924f6fc47f7244ba0d8b22097f9011, type: 3}
 --- !u!195 &725955383013103411
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
     float speed;
     float maxLifetime = 2f;
     float damage = 1f;
+    float skinWidth = .1f;
 
     public LayerMask collisionMask;
     public ObjectPool<GameObject> poolToReturnTo;
@@ -13,6 +14,15 @@ public class Bullet : MonoBehaviour
     void OnEnable()
     {
         Invoke(nameof(ReleaseBullet), maxLifetime);
+    }
+
+    void Start()
+    {
+        Collider[] initialColliders = Physics.OverlapSphere(transform.position, skinWidth, collisionMask);
+        if (initialColliders.Length > 0)
+        {
+            OnHitObject(initialColliders[0], transform.position);
+        }
     }
 
     void Update()
@@ -36,16 +46,16 @@ public class Bullet : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
         {
-            OnHitObject(hit);
+            OnHitObject(hit.collider, hit.point);
         }
     }
 
-    void OnHitObject(RaycastHit hit)
+    void OnHitObject (Collider c, Vector3 hitPoint)
     {
-        IDamageable damageableObj = hit.collider.GetComponent<IDamageable>();
+        IDamageable damageableObj = c.GetComponent<IDamageable>();
         if (damageableObj!= null)
         {
-            damageableObj.TakeHit(damage, hit);
+            damageableObj.TakeHit(damage, hitPoint, transform.forward);
         }
 
         ReleaseBullet();
