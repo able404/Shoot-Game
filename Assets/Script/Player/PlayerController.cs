@@ -32,8 +32,8 @@ public class PlayerController : LivingEntity
         playerInputActions.Player.Move.canceled += OnMove;
         playerInputActions.Player.Look.performed += OnLook;
         // ¶©ÔÄ¿ª»ðÊÂ¼þ
-        playerInputActions.Player.Attack.performed += OnFire;
-        playerInputActions.Player.Attack.canceled += OnFire;
+        playerInputActions.Player.Attack.performed += OnFirePerformed;
+        playerInputActions.Player.Attack.canceled += OnFireCanceled;
     }
 
     protected override void Start()
@@ -50,7 +50,11 @@ public class PlayerController : LivingEntity
 
         if (isFiring)
         {
-            gunController.Shoot();
+            gunController.OnTriggerHold();
+        }
+        if (!isFiring)
+        {
+            gunController.OnTriggerRelease();
         }
     }
 
@@ -107,9 +111,14 @@ public class PlayerController : LivingEntity
         lookInput = context.ReadValue<Vector2>();
     }
 
-    void OnFire(InputAction.CallbackContext context)
+    void OnFirePerformed(InputAction.CallbackContext context)
     {
-        isFiring = context.performed;
+        isFiring = true;
+    }
+
+    void OnFireCanceled(InputAction.CallbackContext context)
+    {
+        isFiring = false;
     }
 
     void OnEnable()
@@ -125,7 +134,7 @@ public class PlayerController : LivingEntity
         playerInputActions.Player.Move.performed -= OnMove;
         playerInputActions.Player.Move.canceled -= OnMove;
         playerInputActions.Player.Look.performed -= OnLook;
-        playerInputActions.Player.Attack.performed -= OnFire;
-        playerInputActions.Player.Attack.canceled -= OnFire;
+        playerInputActions.Player.Attack.performed -= OnFirePerformed;
+        playerInputActions.Player.Attack.canceled -= OnFireCanceled;
     }
 }

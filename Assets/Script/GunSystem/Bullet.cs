@@ -3,6 +3,8 @@ using UnityEngine.Pool;
 
 public class Bullet : MonoBehaviour
 {
+    TrailRenderer trail;
+
     float speed;
     float maxLifetime = 2f;
     float damage = 1f;
@@ -11,8 +13,17 @@ public class Bullet : MonoBehaviour
     public LayerMask collisionMask;
     public ObjectPool<GameObject> poolToReturnTo;
 
+    void Awake()
+    {
+        trail = GetComponentInChildren<TrailRenderer>();
+    }
+
     void OnEnable()
     {
+        if (trail != null)
+        {
+            trail.Clear();
+        }
         Invoke(nameof(ReleaseBullet), maxLifetime);
     }
 
