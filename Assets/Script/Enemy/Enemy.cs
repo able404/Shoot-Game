@@ -30,23 +30,30 @@ public class Enemy : LivingEntity
     }
     State currentState;
 
-
-    protected override void Start()
+    void Awake()
     {
-        base.Start();
         pathFinder = GetComponent<NavMeshAgent>();
 
         if (GameObject.FindGameObjectWithTag("Player") != null)
         {
-            currentState = State.Chasing;
             hasTarget = true;
 
             target = GameObject.FindGameObjectWithTag("Player").transform;
             targetEntity = target.GetComponent<LivingEntity>();
-            targetEntity.OnDeath += OnTargetDeath;
 
             myColliderRadius = GetComponent<CapsuleCollider>().radius;
             targetColliderRadius = target.GetComponent<CapsuleCollider>().radius;
+        }
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        if (hasTarget)
+        {
+            currentState = State.Chasing;
+            targetEntity.OnDeath += OnTargetDeath;
 
             StartCoroutine(UpdatePath());
         }
@@ -66,6 +73,16 @@ public class Enemy : LivingEntity
         }
     }
 
+    public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float enemyHealth)
+    {
+        pathFinder.speed = moveSpeed;
+
+        if (hasTarget)
+        {
+            damage = Mathf.Ceil(targetEntity.startingHealth / hitsToKillPlayer);
+        }
+        startingHealth = enemyHealth;
+    }
 
     public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {

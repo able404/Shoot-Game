@@ -7,6 +7,14 @@ public class GunController : MonoBehaviour
     public Transform weaponHold;
     public Gun startingGun;
 
+    public float GunHeight
+    { 
+        get 
+        { 
+            return weaponHold.position.y;
+        } 
+    }
+
     void Start()
     {
         if (startingGun != null)

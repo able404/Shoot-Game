@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MuzzleFlash : MonoBehaviour
 {
-    float flashTime = .1f;
+    float flashTime = .05f;
 
     public GameObject flashHolder;
     public Sprite[] flashSprites;

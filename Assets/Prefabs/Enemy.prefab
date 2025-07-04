@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 250db50ad8f2e3749965e5f0dbd336ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingHealth: 2
+  startingHealth: -1
   damageFlashColor: {r: 1, g: 1, b: 1, a: 1}
   deathEffect: {fileID: 8414169201672783338, guid: b6924f6fc47f7244ba0d8b22097f9011, type: 3}
 --- !u!195 &725955383013103411
@@ -138,9 +138,9 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3
-  m_Acceleration: 8
+  m_Acceleration: 20
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 720
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1

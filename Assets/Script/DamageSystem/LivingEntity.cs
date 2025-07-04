@@ -45,6 +45,12 @@ public class LivingEntity : MonoBehaviour, IDamageable
         }
     }
 
+    public void RestoreFullHealth()
+    {
+        health = startingHealth;
+        isDead = false;
+    }
+
     [ContextMenu("Self Destruct")]
     protected void Die()
     {

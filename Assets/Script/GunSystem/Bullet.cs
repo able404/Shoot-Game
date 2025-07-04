@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
     float speed;
     float maxLifetime = 2f;
     float damage = 1f;
-    float skinWidth = .1f;
+    float skinWidth = .2f;
 
     public LayerMask collisionMask;
     public ObjectPool<GameObject> poolToReturnTo;
@@ -55,7 +55,7 @@ public class Bullet : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
+        if (Physics.SphereCast(ray, skinWidth, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
         {
             OnHitObject(hit.collider, hit.point);
         }

@@ -16,6 +16,8 @@ public class PlayerController : LivingEntity
     bool isFiring;
     float velocityY;        // 用于存储和计算垂直速度
 
+    public Crosshair crosshair;
+
     public float moveSpeed = 6.0f;
     public float turnSpeed = 15.0f;
 
@@ -41,6 +43,8 @@ public class PlayerController : LivingEntity
         base.Start();
 
         viewCamera = Camera.main;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update()
@@ -84,7 +88,7 @@ public class PlayerController : LivingEntity
     void HandleRotation()
     {
         Ray ray = viewCamera.ScreenPointToRay(lookInput);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.up * gunController.GunHeight);
         float rayDistance;
 
         if (groundPlane.Raycast(ray, out rayDistance))
@@ -98,6 +102,9 @@ public class PlayerController : LivingEntity
                 Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
             }
+
+            crosshair.transform.position = point;
+            crosshair.DetectTargets(ray);
         }
     }
 
