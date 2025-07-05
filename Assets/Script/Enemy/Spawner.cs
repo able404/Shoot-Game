@@ -29,7 +29,7 @@ public class Spawner : MonoBehaviour
     public Wave[] waves;
     public Enemy enemy;
 
-    public bool devMode;
+    public bool devMode = false;
 
     void Awake()
     {

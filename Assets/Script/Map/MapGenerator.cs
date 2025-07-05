@@ -238,13 +238,6 @@ public class MapGenerator : MonoBehaviour
         public Color foregroudColor;
         public Color backgroudColor;
 
-        public Coord mapCenter
-        {
-            get 
-            { 
-                return new Coord(mapSize.x / 2, mapSize.y / 2); 
-            }
-        }
+        public Coord mapCenter => new Coord(mapSize.x / 2, mapSize.y / 2);
     }
-
 }

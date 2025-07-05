@@ -2,15 +2,54 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIController : MonoBehaviour
 {
     public Image fadePlane;
     public GameObject gameOverUI;
+    public Slider healthSlider;
+    public TextMeshProUGUI fireModeText;
+    public TextMeshProUGUI ammoText;
 
     void Start()
     {
-        FindFirstObjectByType<PlayerController>().OnDeath += OnGameOver;
+        PlayerController player = FindFirstObjectByType<PlayerController>();
+
+        if (player != null)
+        {
+            player.OnDeath += OnGameOver;
+
+            if (healthSlider != null)
+            {
+                healthSlider.maxValue = player.startingHealth;
+                healthSlider.value = player.startingHealth;
+            }
+        }
+    }
+
+    public void UpdateAmmoUI(int currentAmmo, int magSize)
+    {
+        if (ammoText != null)
+        {
+            ammoText.text = currentAmmo + " / " + magSize;
+        }
+    }
+
+    public void UpdateFireModeUI(string modeName)
+    {
+        if (fireModeText != null)
+        {
+            fireModeText.text = "Current Fire Mode: " + modeName;
+        }
+    }
+
+    public void UpdateHealthUI(float currentHealth)
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = currentHealth;
+        }
     }
 
     void OnGameOver()
@@ -51,7 +90,6 @@ public class UIController : MonoBehaviour
         }
     }
 
-    // UI Input
     public void StartNewGame()
     {
         Cursor.visible = false;

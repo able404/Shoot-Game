@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 770098c6e5bdc3c4da8b64b559657143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireMode: 0
+  fireMode: 2
   muzzle: {fileID: 2327549959172788654}
   bullet: {fileID: 4240506607271448261, guid: 089ca0e7728a80d45abbc26aa8f09d7d, type: 3}
   shell: {fileID: 3509296793810363119, guid: 50ad5a75da8e97f4bba37672efb150d0, type: 3}
@@ -498,6 +498,8 @@ MonoBehaviour:
   msBetweenShots: 150
   muzzleVelocity: 15
   burstCount: 3
+  bulletsPerMag: 15
+  reloadTime: 0.5
 --- !u!114 &7489418983577631149
 MonoBehaviour:
   m_ObjectHideFlags: 0

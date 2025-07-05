@@ -22,12 +22,7 @@ public class Enemy : LivingEntity
 
     public ParticleSystem deathEffect;
 
-    public enum State
-    { 
-        Idle,
-        Chasing,
-        Attacking
-    }
+    public enum State{ Idle, Chasing, Attacking }
     State currentState;
 
     void Awake()

@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,14 +19,11 @@ public class PlayerController : LivingEntity
 
     public Crosshair crosshair;
 
-    public float moveSpeed = 6.0f;
-    public float turnSpeed = 15.0f;
+    public float moveSpeed = 6f;
+    public float turnSpeed = 15f;
 
     void Awake()
     {
-        controller = GetComponent<CharacterController>();
-        gunController = GetComponent<GunController>();
-
         playerInputActions = new InputSystem_Actions();
         playerInputActions.Player.Enable();
 
@@ -36,6 +34,14 @@ public class PlayerController : LivingEntity
         // 订阅开火事件
         playerInputActions.Player.Attack.performed += OnFirePerformed;
         playerInputActions.Player.Attack.canceled += OnFireCanceled;
+        // 订阅换弹事件
+        playerInputActions.Player.Reload.performed += OnReload;
+        // 订阅开火模式
+        playerInputActions.Player.SwitchFireModeNext.performed += OnSwitchFireModeNext;
+        playerInputActions.Player.SwitchFireModePrev.performed += OnSwitchFireModePrev;
+
+        controller = GetComponent<CharacterController>();
+        gunController = GetComponent<GunController>();
     }
 
     protected override void Start()
@@ -103,8 +109,18 @@ public class PlayerController : LivingEntity
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
             }
 
-            crosshair.transform.position = point;
-            crosshair.DetectTargets(ray);
+            CrosshairUpdate(point, ray);
+        }
+    }
+
+    void CrosshairUpdate(Vector3 point, Ray ray)
+    {
+        crosshair.transform.position = point;
+        crosshair.DetectTargets(ray);
+
+        if ((new Vector2(point.x, point.z) - new Vector2(transform.position.x, transform.position.z)).sqrMagnitude > 1f)
+        {
+            gunController.Aim(point);
         }
     }
 
@@ -128,6 +144,21 @@ public class PlayerController : LivingEntity
         isFiring = false;
     }
 
+    void OnReload(InputAction.CallbackContext context)
+    {
+        gunController.Reload();
+    }
+
+    void OnSwitchFireModeNext(InputAction.CallbackContext context)
+    {
+        gunController.SwitchFireModeNext();
+    }
+
+    void OnSwitchFireModePrev(InputAction.CallbackContext context)
+    {
+        gunController.SwitchFireModePrev();
+    }
+
     void OnEnable()
     {
         playerInputActions.Player.Enable();
@@ -143,5 +174,8 @@ public class PlayerController : LivingEntity
         playerInputActions.Player.Look.performed -= OnLook;
         playerInputActions.Player.Attack.performed -= OnFirePerformed;
         playerInputActions.Player.Attack.canceled -= OnFireCanceled;
+        playerInputActions.Player.Reload.performed -= OnReload;
+        playerInputActions.Player.SwitchFireModeNext.performed -= OnSwitchFireModeNext;
+        playerInputActions.Player.SwitchFireModePrev.performed -= OnSwitchFireModePrev;
     }
 }

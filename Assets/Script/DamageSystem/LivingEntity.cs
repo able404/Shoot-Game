@@ -39,6 +39,15 @@ public class LivingEntity : MonoBehaviour, IDamageable
         }
         damageFlashCoroutine = StartCoroutine(DamageFlash());
 
+        if (this is PlayerController)
+        {
+            var ui = FindFirstObjectByType<UIController>();
+            if (ui != null)
+            {
+                ui.UpdateHealthUI(health);
+            }
+        }
+
         if (health <= 0 && !isDead)
         {
             Die();
@@ -49,6 +58,15 @@ public class LivingEntity : MonoBehaviour, IDamageable
     {
         health = startingHealth;
         isDead = false;
+
+        if (this is PlayerController)
+        {
+            var ui = FindFirstObjectByType<UIController>();
+            if (ui != null)
+            {
+                ui.UpdateHealthUI(health);
+            }
+        }
     }
 
     [ContextMenu("Self Destruct")]
