@@ -500,6 +500,8 @@ MonoBehaviour:
   burstCount: 3
   bulletsPerMag: 15
   reloadTime: 0.5
+  shootAudio: {fileID: 8300000, guid: b585318940e5644e095a7d423a6a8ac5, type: 3}
+  reloadAudio: {fileID: 8300000, guid: d617432175d1a42b9adc26881cd90b15, type: 3}
 --- !u!114 &7489418983577631149
 MonoBehaviour:
   m_ObjectHideFlags: 0

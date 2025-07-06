@@ -48,6 +48,10 @@ public class Gun : MonoBehaviour
     public int bulletsPerMag;
     public float reloadTime;
 
+    [Header("SFX")]
+    public AudioClip shootAudio;
+    public AudioClip reloadAudio;
+
     // 只读属性与事件
     public int BulletsRemainingInMag => bulletsRemainingInMag;
 
@@ -125,6 +129,8 @@ public class Gun : MonoBehaviour
         transform.localPosition -= Vector3.forward * Random.Range(kickMinMax.x, kickMinMax.y);
         recoilAngle += Random.Range(recoilAngleMinMax.x, recoilAngleMinMax.y);
         recoilAngle = Mathf.Clamp(recoilAngle, 0f, 30f);
+        // 音效
+        AudioManager.instance.PlaySound(shootAudio, transform.position);
     }
 
     public void OnTriggerHold()
@@ -177,6 +183,7 @@ public class Gun : MonoBehaviour
         if (!isReloading && bulletsRemainingInMag != bulletsPerMag)
         {
             StartCoroutine(AnimateReload());
+            AudioManager.instance.PlaySound(reloadAudio, transform.position);
         }
     }
 

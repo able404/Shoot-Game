@@ -35,7 +35,6 @@ public class Spawner : MonoBehaviour
     {
         inputActions = new InputSystem_Actions();
         inputActions.UI.NextWave.Enable();
-
         inputActions.UI.NextWave.performed += SkipToNextWave;
     }
 
