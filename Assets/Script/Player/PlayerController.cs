@@ -55,16 +55,20 @@ public class PlayerController : LivingEntity
 
     void Update()
     {
-        HandleMovement();
         HandleRotation();
 
-        if (isFiring)
+        if (UIController.CurrentState == GameState.Running)
         {
-            gunController.OnTriggerHold();
-        }
-        if (!isFiring)
-        {
-            gunController.OnTriggerRelease();
+            HandleMovement();
+
+            if (isFiring)
+            {
+                gunController.OnTriggerHold();
+            }
+            if (!isFiring)
+            {
+                gunController.OnTriggerRelease();
+            }
         }
     }
 
@@ -157,11 +161,6 @@ public class PlayerController : LivingEntity
     void OnSwitchFireModePrev(InputAction.CallbackContext context)
     {
         gunController.SwitchFireModePrev();
-    }
-
-    void OnEnable()
-    {
-        playerInputActions.Player.Enable();
     }
 
     void OnDisable()

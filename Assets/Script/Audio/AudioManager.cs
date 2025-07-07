@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
+    public static bool IsRestarting = false;
 
     int activeMusicSourceIndex;
 

@@ -18,8 +18,12 @@ public class LivingEntity : MonoBehaviour, IDamageable
 
     protected virtual void Start()
     {
-        skinMaterial = GetComponent<Renderer>().material;
-        originalColor = skinMaterial.color;
+        Renderer skinRenderer = GetComponentInChildren<Renderer>();
+        if (skinRenderer != null)
+        {
+            skinMaterial = skinRenderer.material;
+            originalColor = skinMaterial.color;
+        }
 
         health = startingHealth;
     }
@@ -77,13 +81,25 @@ public class LivingEntity : MonoBehaviour, IDamageable
         {
             OnDeath();
         }
+
+        if (this is PlayerController)
+        {
+            AudioManager.instance.PlaySound("Player Death", transform.position);
+        }
         Destroy(gameObject);
     }
 
     IEnumerator DamageFlash()
     {
         skinMaterial.color = damageFlashColor;
-        yield return new WaitForSeconds(flashDuration);
+        float flashTimer = 0f;
+
+        while (flashTimer < flashDuration)
+        {
+            flashTimer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
         skinMaterial.color = originalColor;
     }
 }

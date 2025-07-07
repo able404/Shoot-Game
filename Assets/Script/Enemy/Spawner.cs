@@ -5,6 +5,7 @@ using System.Collections;
 public class Spawner : MonoBehaviour
 {
     InputSystem_Actions inputActions;
+
     LivingEntity playerEntity;
     Transform playerTransform;
     MapGenerator map;
@@ -47,37 +48,28 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    void SkipToNextWave(InputAction.CallbackContext context)
-    {
-        if (!devMode) return;
-
-        StopCoroutine("SpawnEnemy");
-        foreach (var enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            var enemy = enemyObj.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                Destroy(enemyObj);
-            }
-        }
-        NextWave();
-    }
-
     void Start()
     {
         playerEntity = FindFirstObjectByType<PlayerController>();
-        playerEntity.OnDeath += OnPlayerDeath;
-        playerTransform = playerEntity.transform;
+        if (playerEntity != null)
+        {
+            playerEntity.OnDeath += OnPlayerDeath; 
+            playerTransform = playerEntity.transform; 
+        }
 
         nextCampCheckTime = timeBetweenCampingChecks + Time.time;
-        campPositionOld = playerTransform.position;
+        if (playerTransform != null) 
+        {
+            campPositionOld = playerTransform.position;
+        }
 
-        map = FindFirstObjectByType<MapGenerator>(); 
-        NextWave();
+        map = FindFirstObjectByType<MapGenerator>();
     }
 
     void Update()
     {
+        if (UIController.CurrentState != GameState.Running) return;
+
         if (!isDisabled)
         {
             if (Time.time > nextCampCheckTime)
@@ -96,6 +88,22 @@ public class Spawner : MonoBehaviour
                 StartCoroutine("SpawnEnemy");
             }
         }
+    }
+
+    void SkipToNextWave(InputAction.CallbackContext context)
+    {
+        if (!devMode) return;
+
+        StopCoroutine("SpawnEnemy");
+        foreach (var enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            var enemy = enemyObj.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                Destroy(enemyObj);
+            }
+        }
+        NextWave();
     }
 
     IEnumerator SpawnEnemy()
@@ -165,7 +173,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    void NextWave()
+    public void NextWave()
     {
         currentWaveNum++;
 
@@ -196,7 +204,6 @@ public class Spawner : MonoBehaviour
         public bool infinite;
         public int enemyCount;
         public float timeBetweenSpawns;
-
         public float moveSpeed;
         public int hitsToKillPlayer;
         public float enemyHealth;

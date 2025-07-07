@@ -440,7 +440,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SwitchToMainMusic",
+                    "name": "StartGame",
                     "type": "Button",
                     "id": "8fa0bea0-586c-4c87-8a55-af154805744d",
                     "expectedControlType": "",
@@ -897,7 +897,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "SwitchToMainMusic",
+                    "action": "StartGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

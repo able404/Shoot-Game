@@ -36,8 +36,17 @@ public class Enemy : LivingEntity
             target = GameObject.FindGameObjectWithTag("Player").transform;
             targetEntity = target.GetComponent<LivingEntity>();
 
-            myColliderRadius = GetComponent<CapsuleCollider>().radius;
-            targetColliderRadius = target.GetComponent<CapsuleCollider>().radius;
+            CapsuleCollider myCollider = GetComponentInChildren<CapsuleCollider>();
+            if (myCollider != null)
+            {
+                myColliderRadius = myCollider.radius;
+            }
+
+            CapsuleCollider targetCollider = target.GetComponentInChildren<CapsuleCollider>();
+            if (targetCollider != null)
+            {
+                targetColliderRadius = targetCollider.radius;
+            }
         }
     }
 
@@ -56,6 +65,14 @@ public class Enemy : LivingEntity
 
     void Update()
     {
+        bool shouldBeStopped = (UIController.CurrentState != GameState.Running);
+
+        if (pathFinder.isOnNavMesh)
+        {
+            pathFinder.isStopped = shouldBeStopped;
+        }
+        if (shouldBeStopped) return;
+
         if (hasTarget && Time.time > nextAttackTime)
         {
             float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;

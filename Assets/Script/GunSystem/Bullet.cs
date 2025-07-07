@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
 public class Bullet : MonoBehaviour
 {
+    HashSet<Collider> hitColliders = new HashSet<Collider>();
+
     TrailRenderer trail;
 
     float speed;
     float maxLifetime = 2f;
     float damage = 1f;
-    float skinWidth = .2f;
+    float skinWidth = .5f;
 
     public LayerMask collisionMask;
     public ObjectPool<GameObject> poolToReturnTo;
@@ -25,24 +28,34 @@ public class Bullet : MonoBehaviour
             trail.Clear();
         }
         Invoke(nameof(ReleaseBullet), maxLifetime);
-    }
+        hitColliders.Clear();
 
-    void Start()
-    {
-        Collider[] initialColliders = Physics.OverlapSphere(transform.position, skinWidth, collisionMask);
-        if (initialColliders.Length > 0)
+        Collider[] initialColliders = Physics.OverlapSphere(transform.position, skinWidth, collisionMask, QueryTriggerInteraction.Collide);
+        foreach (var col in initialColliders)
         {
-            OnHitObject(initialColliders[0], transform.position);
+            if (!hitColliders.Contains(col))
+            {
+                OnHitObject(col, transform.position);
+                break;
+            }
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!gameObject.activeInHierarchy) return;
 
-        float moveDistance = speed * Time.deltaTime;
-        CheckCollisions(moveDistance);
-        transform.Translate(Vector3.forward * moveDistance);
+        float moveDistance = speed * Time.fixedDeltaTime;
+        int steps = Mathf.CeilToInt(moveDistance / skinWidth);
+        float stepDistance = moveDistance / steps;
+
+        for (int i = 0; i < steps; i++)
+        {
+            if (CheckCollisions(stepDistance))
+                break;
+            transform.Translate(Vector3.forward * stepDistance);
+            if (!gameObject.activeInHierarchy) break;
+        }
     }
 
     public void SetSpeed(float newSpeed)
@@ -50,21 +63,30 @@ public class Bullet : MonoBehaviour
         speed = newSpeed;
     }
 
-    void CheckCollisions(float moveDistance)
+    bool CheckCollisions(float moveDistance)
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Vector3 sphereCastStartPoint = transform.position - transform.forward * skinWidth;
+        Ray ray = new Ray(sphereCastStartPoint, transform.forward);
         RaycastHit hit;
 
-        if (Physics.SphereCast(ray, skinWidth, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
+        if (Physics.SphereCast(ray, skinWidth, out hit, moveDistance + skinWidth, collisionMask, QueryTriggerInteraction.Collide))
         {
-            OnHitObject(hit.collider, hit.point);
+            if (hit.distance > skinWidth && !hitColliders.Contains(hit.collider))
+            {
+                OnHitObject(hit.collider, hit.point);
+                return true;
+            }
         }
+        return false;
     }
 
     void OnHitObject (Collider c, Vector3 hitPoint)
     {
-        IDamageable damageableObj = c.GetComponent<IDamageable>();
-        if (damageableObj!= null)
+        if (hitColliders.Contains(c)) return;
+        hitColliders.Add(c);
+
+        IDamageable damageableObj = c.GetComponentInParent<IDamageable>();
+        if (damageableObj != null)
         {
             damageableObj.TakeHit(damage, hitPoint, transform.forward);
         }
