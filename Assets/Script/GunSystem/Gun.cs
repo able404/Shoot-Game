@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -17,14 +18,15 @@ public class Gun : MonoBehaviour
     bool isReloading;
     bool isFiringBurst;
 
-    // 后坐力参数
+    // 后坐力
     Vector3 recoilSmoothDampVelocity;
     float recoilRotSmoothDampVelocity;
     float recoilAngle;
-    Vector2 kickMinMax = new Vector2(.05f, .2f);            // 后坐力位移范围
-    Vector2 recoilAngleMinMax = new Vector2(3f, 5f);        // 后坐力角度范围
-    float recoilMoveSettleTime = .1f;                       // 后坐力位移复位时间
-    float recoilRotationSettleTime = .1f;                   // 后坐力角度复位时间
+    Vector2 kickMinMax = new Vector2(.05f, .2f);            // 位移范围
+    Vector2 recoilAngleMinMax = new Vector2(3f, 5f);        // 角度范围
+    float recoilMoveSettleTime = .1f;                       // 位移复位时间
+    float recoilRotationSettleTime = .1f;                   // 角度复位时间
+    CinemachineImpulseSource impulseSource;
 
     public enum FireMode{ Auto, Burst, Single }
     public FireMode fireMode;
@@ -60,6 +62,8 @@ public class Gun : MonoBehaviour
 
     void Awake()
     {
+        impulseSource = GetComponent<CinemachineImpulseSource>();
+
         shotsRemainingInBurst = burstCount;
         bulletsRemainingInMag = bulletsPerMag;
     }
@@ -129,6 +133,8 @@ public class Gun : MonoBehaviour
         transform.localPosition -= Vector3.forward * Random.Range(kickMinMax.x, kickMinMax.y);
         recoilAngle += Random.Range(recoilAngleMinMax.x, recoilAngleMinMax.y);
         recoilAngle = Mathf.Clamp(recoilAngle, 0f, 30f);
+        CameraShakeManager.instance.CameraShake(impulseSource);
+
         // 音效
         AudioManager.instance.PlaySound(shootAudio, transform.position);
     }

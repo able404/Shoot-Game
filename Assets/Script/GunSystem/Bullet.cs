@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
     float speed;
     float maxLifetime = 2f;
     float damage = 1f;
-    float skinWidth = .5f;
+    float skinWidth = .3f;
 
     public LayerMask collisionMask;
     public ObjectPool<GameObject> poolToReturnTo;

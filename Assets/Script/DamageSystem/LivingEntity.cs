@@ -28,6 +28,26 @@ public class LivingEntity : MonoBehaviour, IDamageable
         health = startingHealth;
     }
 
+    public void Heal(float amount)
+    {
+        if (isDead) return;
+
+        health += amount;
+        if (health > startingHealth)
+        {
+            health = startingHealth;
+        }
+
+        if (this is PlayerController)
+        {
+            var ui = FindFirstObjectByType<UIController>();
+            if (ui != null)
+            {
+                ui.UpdateHealthUI(health);
+            }
+        }
+    }
+
     public virtual void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
         TakeDamage(damage);

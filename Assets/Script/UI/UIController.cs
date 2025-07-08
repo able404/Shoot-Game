@@ -18,6 +18,9 @@ public class UIController : MonoBehaviour
     public GameObject startUI;
     public Image startFadeImage;
 
+    [Header("Score UI")]
+    public TextMeshProUGUI scoreText;
+
     [Header("Game Over UI")]
     public GameObject gameOverUI;
 
@@ -70,6 +73,7 @@ public class UIController : MonoBehaviour
             FindFirstObjectByType<Spawner>()?.NextWave();
 
             AudioManager.IsRestarting = false;
+            ScoreKeeper.Reset();
         }
         else
         {
@@ -112,6 +116,14 @@ public class UIController : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + ScoreKeeper.score.ToString("D5");
+        }
+    }
+
     void OnStartGame(InputAction.CallbackContext context)
     {
         if (CurrentState == GameState.PreGame)
@@ -121,6 +133,7 @@ public class UIController : MonoBehaviour
             StopCoroutine(PulsateFade()); 
 
             FindFirstObjectByType<Spawner>()?.NextWave();
+            ScoreKeeper.Reset();
         }
     }
 

@@ -42,6 +42,24 @@ public class PlayerController : LivingEntity
 
         controller = GetComponent<CharacterController>();
         gunController = GetComponent<GunController>();
+
+        ScoreKeeper.OnTenKills += OnTenKillsHeal;
+    }
+
+    void OnDisable()
+    {
+        playerInputActions.Player.Disable();
+
+        // 取消订阅事件，防止内存泄漏
+        playerInputActions.Player.Move.performed -= OnMove;
+        playerInputActions.Player.Move.canceled -= OnMove;
+        playerInputActions.Player.Look.performed -= OnLook;
+        playerInputActions.Player.Attack.performed -= OnFirePerformed;
+        playerInputActions.Player.Attack.canceled -= OnFireCanceled;
+        playerInputActions.Player.Reload.performed -= OnReload;
+        playerInputActions.Player.SwitchFireModeNext.performed -= OnSwitchFireModeNext;
+        playerInputActions.Player.SwitchFireModePrev.performed -= OnSwitchFireModePrev;
+        ScoreKeeper.OnTenKills -= OnTenKillsHeal;
     }
 
     protected override void Start()
@@ -163,18 +181,8 @@ public class PlayerController : LivingEntity
         gunController.SwitchFireModePrev();
     }
 
-    void OnDisable()
+    void OnTenKillsHeal()
     {
-        playerInputActions.Player.Disable();
-
-        // 取消订阅事件，防止内存泄漏
-        playerInputActions.Player.Move.performed -= OnMove;
-        playerInputActions.Player.Move.canceled -= OnMove;
-        playerInputActions.Player.Look.performed -= OnLook;
-        playerInputActions.Player.Attack.performed -= OnFirePerformed;
-        playerInputActions.Player.Attack.canceled -= OnFireCanceled;
-        playerInputActions.Player.Reload.performed -= OnReload;
-        playerInputActions.Player.SwitchFireModeNext.performed -= OnSwitchFireModeNext;
-        playerInputActions.Player.SwitchFireModePrev.performed -= OnSwitchFireModePrev;
+        Heal(1);
     }
 }
