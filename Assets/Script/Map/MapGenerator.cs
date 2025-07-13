@@ -1,5 +1,6 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class MapGenerator : MonoBehaviour
     [Range(0, 1)]
     public float outLinePercent;
     public float tileSize;
+    public float obstacleAnimationDuration;
 
     void Start()
     {
@@ -89,13 +91,20 @@ public class MapGenerator : MonoBehaviour
             currentObstacleCount ++;
             if (randomCoord != currentMap.mapCenter && MapIsFullyAccessible(obstacleMap, currentObstacleCount))
             {
+                // 计算出最终的目标高度
                 float obstacleHeight = Mathf.Lerp(currentMap.minObstacleHeight, currentMap.maxObstacleHeight, (float)prng.NextDouble());
                 Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
 
-                Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition + Vector3.up * obstacleHeight / 2, Quaternion.identity) as Transform;
+                // 生成障碍物，但先将其放置在地面上 (Y轴为0)
+                Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition, Quaternion.identity) as Transform;
                 newObstacle.parent = mapHolder;
-                newObstacle.localScale = new Vector3((1 - outLinePercent) * tileSize, obstacleHeight, (1 - outLinePercent) * tileSize);
+                // 设置X和Z轴的缩放，Y轴的缩放将由协程控制
+                newObstacle.localScale = new Vector3((1 - outLinePercent) * tileSize, 0, (1 - outLinePercent) * tileSize);
 
+                // 启动协程来执行生长动画
+                StartCoroutine(AnimateObstacle(newObstacle, obstacleHeight, obstacleAnimationDuration));
+
+                // 设置颜色
                 Renderer obstacleRenderer = newObstacle.GetComponent<Renderer>();
                 Material obstacleMaterial = new Material(obstacleRenderer.sharedMaterial);
                 float colorPercent = randomCoord.y / (float)currentMap.mapSize.y;
@@ -203,6 +212,29 @@ public class MapGenerator : MonoBehaviour
 
         return tileMap[randomCoord.x, randomCoord.y];
     }
+
+    IEnumerator AnimateObstacle(Transform obstacle, float targetHeight, float duration)
+    {
+        float percent = 0f;
+        // 动画开始前，将障碍物的Y轴缩放设为0
+        obstacle.localScale = new Vector3(obstacle.localScale.x, 0, obstacle.localScale.z);
+
+        while (percent < 1f)
+        {
+            percent += Time.deltaTime / duration;
+
+            // 使用一个缓动函数 (Ease-Out) 来获得更平滑的动画效果，而不是简单的线性增长
+            float easedPercent = 1 - Mathf.Pow(1 - percent, 3);
+            float currentHeight = Mathf.Lerp(0, targetHeight, easedPercent);
+
+            // 同时更新障碍物的高度（localScale.y）和位置（position.y）
+            obstacle.localScale = new Vector3(obstacle.localScale.x, currentHeight, obstacle.localScale.z);
+            obstacle.position = new Vector3(obstacle.position.x, currentHeight / 2f, obstacle.position.z);
+
+            yield return null;
+        }
+    }
+
 
     [System.Serializable]
     public struct Coord

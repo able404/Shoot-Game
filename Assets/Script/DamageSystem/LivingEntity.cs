@@ -30,7 +30,10 @@ public class LivingEntity : MonoBehaviour, IDamageable
 
     public void Heal(float amount)
     {
-        if (isDead) return;
+        if (isDead || health >= startingHealth)
+        {
+            return;
+        }
 
         health += amount;
         if (health > startingHealth)
@@ -44,6 +47,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
             if (ui != null)
             {
                 ui.UpdateHealthUI(health);
+                AudioManager.instance.PlaySound("Player Heal", transform.position);
             }
         }
     }
