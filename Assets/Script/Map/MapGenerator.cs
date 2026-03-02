@@ -248,6 +248,15 @@ public class MapGenerator : MonoBehaviour
             y = _y;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Coord other && this == other;
+        }
+        public override int GetHashCode()
+        {
+            return System.HashCode.Combine(x, y);
+        }
+
         public static bool operator == (Coord c1, Coord c2)
         {
             return c1.x == c2.x && c1.y == c2.y;
